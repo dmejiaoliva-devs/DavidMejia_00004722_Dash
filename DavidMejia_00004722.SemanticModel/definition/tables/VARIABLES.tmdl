@@ -1,0 +1,81 @@
+table VARIABLES
+	lineageTag: 9cca71ab-f31d-46a9-ac86-d77420fa65e8
+
+	measure CONT_VENTAS = COUNT(Fact_Ventas[ID])
+		formatString: 0
+		lineageTag: aa0fce15-693e-4247-b293-13394d05623b
+
+	column Fecha
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: f9ff33af-b5c4-4c68-8993-4c2c31adb5f5
+		summarizeBy: none
+		sourceColumn: Fecha
+
+		variation Variación
+			isDefault
+			relationship: bc7da0a8-e766-4b6a-8347-a5f80cf64190
+			defaultHierarchy: LocalDateTable_0b191f99-7ee8-4020-b004-9ef865fccd70.'Jerarquía de fechas'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Año
+		dataType: int64
+		formatString: 0
+		lineageTag: 58116ca4-3f0f-42d9-a23b-9e66e077daa9
+		summarizeBy: sum
+		sourceColumn: Año
+
+		annotation SummarizationSetBy = Automatic
+
+	column Semana
+		dataType: int64
+		formatString: 0
+		lineageTag: b5e0834f-6008-4aac-8896-83ae3c05142b
+		summarizeBy: sum
+		sourceColumn: Semana
+
+		annotation SummarizationSetBy = Automatic
+
+	column Mes
+		dataType: string
+		lineageTag: 235746c1-8792-42b0-bf1b-53fae3345608
+		summarizeBy: none
+		sourceColumn: Mes
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Numero Mes'
+		dataType: int64
+		formatString: 0
+		lineageTag: c1151ab2-a4e0-4de6-98e9-4d67083a2d76
+		summarizeBy: sum
+		sourceColumn: Numero Mes
+
+		annotation SummarizationSetBy = Automatic
+
+	column datekey
+		dataType: int64
+		formatString: 0
+		lineageTag: fca74471-d1a0-47ba-89df-fb0a1cffcb83
+		summarizeBy: none
+		sourceColumn: datekey
+
+		annotation SummarizationSetBy = Automatic
+
+	partition VARIABLES = m
+		mode: import
+		source =
+				let
+				    Origen = Excel.Workbook(File.Contents("C:\Users\dmeji\Downloads\VentasVehiculos.xlsx"), null, true),
+				    Dim_Calendario_Table = Origen{[Item="Dim_Calendario",Kind="Table"]}[Data],
+				    #"Tipo cambiado" = Table.TransformColumnTypes(Dim_Calendario_Table,{{"Fecha", type date}, {"Año", Int64.Type}, {"Semana", Int64.Type}, {"Mes", type text}, {"Numero Mes", Int64.Type}, {"datekey", Int64.Type}})
+				in
+				    #"Tipo cambiado"
+
+	changedProperty = Name
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,32 @@
+table Dim_Cliente
+	lineageTag: 128fe1c5-212b-4890-a825-38f932c8c162
+
+	column id_Cliente
+		dataType: int64
+		formatString: 0
+		lineageTag: d252df9f-0bd9-4b88-8468-d8e7afbfe59e
+		summarizeBy: none
+		sourceColumn: id_Cliente
+
+		annotation SummarizationSetBy = Automatic
+
+	column Nombre
+		dataType: string
+		lineageTag: 15d5a685-f6ad-444b-b8ac-7561db4b2075
+		summarizeBy: none
+		sourceColumn: Nombre
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Dim_Cliente = m
+		mode: import
+		source =
+				let
+				    Origen = Excel.Workbook(File.Contents("C:\Users\dmeji\Downloads\VentasVehiculos.xlsx"), null, true),
+				    Dim_Cliente_Table = Origen{[Item="Dim_Cliente",Kind="Table"]}[Data],
+				    #"Tipo cambiado" = Table.TransformColumnTypes(Dim_Cliente_Table,{{"id_Cliente", Int64.Type}, {"Nombre", type text}})
+				in
+				    #"Tipo cambiado"
+
+	annotation PBI_ResultType = Table
+
